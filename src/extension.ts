@@ -10,6 +10,7 @@ import { RequestOptions } from "../webview/features/requestOptions/requestOption
 function createRequestPanel(
   context: vscode.ExtensionContext,
   collectionsProvider: CollectionsProvider,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   savedRequest?: any
 ) {
   const webviewContent = fs
@@ -84,12 +85,14 @@ function createRequestPanel(
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const headersObj: any = {};
 
       if (auth.type === "bearer") {
         headersObj["Authorization"] = `Bearer ${auth.bearer.token}`;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       headers.forEach(({ key, value, disabled }: any) => {
         if (!disabled) {
           headersObj[key] = value;
@@ -99,6 +102,7 @@ function createRequestPanel(
       let data = "";
       if (body.mode === "formdata") {
         const dataObj = new URLSearchParams();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         body.formdata.forEach(({ key, value, disabled }: any) => {
           if (!disabled) {
             dataObj.append(key, value);
@@ -108,6 +112,7 @@ function createRequestPanel(
         headersObj["Content-Type"] = "multipart/form-data";
       } else if (body.mode === "urlencoded") {
         const dataObj = new URLSearchParams();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         body.urlencoded.forEach(({ key, value, disabled }: any) => {
           if (!disabled) {
             dataObj.append(key, value);
@@ -264,6 +269,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const saveRequestCommand = vscode.commands.registerCommand(
     "postcode.saveRequest",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (requestData: any) => {
       const collections = collectionsProvider.getCollections();
       if (collections.length === 0) {

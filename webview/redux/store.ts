@@ -7,12 +7,16 @@ import requestUrlReducer from "../features/requestUrl/requestUrlSlice";
 import responseReducer from "../features/response/responseSlice";
 import codeGenOptionsReducer from "../features/codeGen/codeGenSlice";
 import requestOptionsReducer from "../features/requestOptions/requestOptionsSlice";
-import collectionsReducer from "../features/collections/collectionsSlice";
+
+interface WindowWithPreloadedState extends Window {
+  __PRELOADED_STATE__?: unknown;
+}
 
 let preloadedState;
 if (typeof window !== "undefined") {
-  preloadedState = (window as any).__PRELOADED_STATE__;
-  delete (window as any).__PRELOADED_STATE__;
+  const windowWithState = window as WindowWithPreloadedState;
+  preloadedState = windowWithState.__PRELOADED_STATE__;
+  delete windowWithState.__PRELOADED_STATE__;
 }
 
 export const store = configureStore({
@@ -25,7 +29,6 @@ export const store = configureStore({
     response: responseReducer,
     codeGenOptions: codeGenOptionsReducer,
     requestOptions: requestOptionsReducer,
-    collections: collectionsReducer,
   },
   preloadedState,
 });
