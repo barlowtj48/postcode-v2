@@ -129,7 +129,7 @@
     "vscode:prepublish": "yarn run package",
     "compile": "cross-env NODE_ENV=development webpack --progress",
     "watch": "cross-env NODE_ENV=development webpack --progress --watch",
-    "package": "cross-env NODE_ENV=production webpack --progress",
+    "package": "cross-env NODE_OPTIONS=\"--openssl-legacy-provider\" NODE_ENV=production webpack --progress",
     "test-compile": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
     "pretest": "yarn run test-compile && yarn run lint",
