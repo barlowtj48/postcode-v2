@@ -1,0 +1,155 @@
+.xml-object-browser {
+  height: 100%;
+  padding: 10px;
+  background-color: var(--background);
+  color: var(--default-text);
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--default-font-size);
+  overflow: auto;
+}
+
+.xml-root {
+  line-height: 1.4;
+}
+
+.xml-object-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  margin: 2px 0;
+}
+
+.xml-object-header:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.xml-collapse-icon {
+  margin-right: 5px;
+  font-size: 12px;
+  width: 12px;
+  display: inline-block;
+}
+
+.xml-collapse-icon.collapsed {
+  color: var(--vscode-tree-tableColumnsBorder);
+}
+
+.xml-collapse-icon.expanded {
+  color: var(--vscode-tree-tableColumnsBorder);
+}
+
+.xml-brace {
+  color: var(--vscode-debugTokenExpression-name);
+  font-weight: bold;
+}
+
+.xml-bracket {
+  color: var(--vscode-debugTokenExpression-name);
+  font-weight: bold;
+}
+
+.xml-object-summary {
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+  margin-left: 5px;
+}
+
+.xml-object-content {
+  margin-left: 15px;
+}
+
+.xml-property {
+  margin: 2px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.xml-property-key {
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.xml-element-key {
+  color: var(--vscode-debugTokenExpression-name);
+}
+
+.xml-attribute-key {
+  color: var(--vscode-debugTokenExpression-number);
+  font-style: italic;
+}
+
+.xml-property-value {
+  flex: 1;
+}
+
+.xml-string-value {
+  color: var(--vscode-debugTokenExpression-string);
+}
+
+.xml-number-value {
+  color: var(--vscode-debugTokenExpression-number);
+}
+
+.xml-boolean-value {
+  color: var(--vscode-debugTokenExpression-boolean);
+}
+
+.xml-null-value {
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+}
+
+.xml-array {
+  margin: 2px 0;
+}
+
+.xml-array-item {
+  margin: 2px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.xml-array-index {
+  color: var(--vscode-debugTokenExpression-number);
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.xml-error {
+  padding: 20px;
+  background-color: var(--vscode-inputValidation-errorBackground);
+  border: 1px solid var(--vscode-inputValidation-errorBorder);
+  border-radius: 4px;
+}
+
+.xml-error h4 {
+  color: var(--vscode-errorForeground);
+  margin: 0 0 10px 0;
+}
+
+.xml-error p {
+  color: var(--vscode-errorForeground);
+  margin: 0 0 15px 0;
+}
+
+.xml-error details {
+  margin-top: 10px;
+}
+
+.xml-error summary {
+  cursor: pointer;
+  color: var(--vscode-textLink-foreground);
+  margin-bottom: 10px;
+}
+
+.xml-raw-data {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  padding: 10px;
+  border-radius: 4px;
+  overflow: auto;
+  max-height: 200px;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+}

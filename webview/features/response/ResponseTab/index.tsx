@@ -5,6 +5,7 @@ import { responseOptions } from "../../../constants/response-options";
 import {
   responseViews,
   htmlResponseViews,
+  xmlResponseViews,
 } from "../../../constants/response-views";
 import { supportedLangs } from "../../../constants/supported-langs";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -53,6 +54,23 @@ export const ResponseTab = (props) => {
     return contentTypeHeader?.value.toLowerCase().includes("text/html");
   };
 
+  // Check if the response is XML
+  const isXmlResponse = () => {
+    if (language === "xml") return true;
+    if (!response.headers) return false;
+
+    const contentTypeHeader = response.headers.find(
+      (header) => header.key.toLowerCase() === "content-type"
+    );
+
+    const contentType = contentTypeHeader?.value.toLowerCase() || "";
+    return (
+      contentType.includes("application/xml") ||
+      contentType.includes("text/xml") ||
+      contentType.includes("+xml")
+    );
+  };
+
   // Check if the data looks like JSON
   const looksLikeJson = (data: string) => {
     if (!data || data.trim().length === 0) return false;
@@ -65,14 +83,21 @@ export const ResponseTab = (props) => {
 
   const isJsonContent = isJsonResponse() || looksLikeJson(response.data || "");
   const isHtmlContent = isHtmlResponse();
+  const isXmlContent = isXmlResponse();
 
+  // Explicitly exclude text language from view mode options
   const showViewModeToggle =
-    selected === "body" && (isJsonContent || isHtmlContent);
+    selected === "body" &&
+    language !== "text" &&
+    (isJsonContent || isHtmlContent || isXmlContent);
 
   // Get the appropriate view options based on content type
   const getViewOptions = () => {
     if (isHtmlContent) {
       return htmlResponseViews;
+    }
+    if (isXmlContent) {
+      return xmlResponseViews;
     }
     return responseViews;
   };

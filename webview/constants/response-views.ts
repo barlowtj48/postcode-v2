@@ -27,3 +27,18 @@ export const htmlResponseViews = [
     value: "preview",
   },
 ];
+
+export const xmlResponseViews = [
+  {
+    name: "Pretty",
+    value: "pretty",
+  },
+  {
+    name: "Raw",
+    value: "raw",
+  },
+  {
+    name: "Object Browser",
+    value: "object",
+  },
+];
