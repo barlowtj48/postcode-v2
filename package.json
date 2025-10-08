@@ -39,6 +39,34 @@
       {
         "command": "postcode.createRequest",
         "title": "Postcode: Create Request"
+      },
+      {
+        "command": "postcode.saveRequest",
+        "title": "Save Request"
+      },
+      {
+        "command": "postcode.loadRequest",
+        "title": "Load Request"
+      },
+      {
+        "command": "postcode.createCollection",
+        "title": "Create Collection",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "postcode.deleteCollection",
+        "title": "Delete Collection",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "postcode.deleteRequest",
+        "title": "Delete Request",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "postcode.renameItem",
+        "title": "Rename",
+        "icon": "$(edit)"
       }
     ],
     "viewsContainers": {
@@ -53,17 +81,53 @@
     "views": {
       "postcode": [
         {
-          "id": "postcode.request",
-          "name": "Request"
+          "id": "postcode.collections",
+          "name": "Collections"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "postcode.request",
-        "contents": "[Create Request](command:postcode.createRequest)"
+        "view": "postcode.collections",
+        "contents": "[Create Request](command:postcode.createRequest)\n\n[Create Collection](command:postcode.createCollection)"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "postcode.createCollection",
+          "when": "view == postcode.collections",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "postcode.loadRequest",
+          "when": "view == postcode.collections && viewItem == request",
+          "group": "inline"
+        },
+        {
+          "command": "postcode.renameItem",
+          "when": "view == postcode.collections && viewItem == request",
+          "group": "context"
+        },
+        {
+          "command": "postcode.deleteRequest",
+          "when": "view == postcode.collections && viewItem == request",
+          "group": "context"
+        },
+        {
+          "command": "postcode.renameItem",
+          "when": "view == postcode.collections && viewItem == collection",
+          "group": "context"
+        },
+        {
+          "command": "postcode.deleteCollection",
+          "when": "view == postcode.collections && viewItem == collection",
+          "group": "context"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",

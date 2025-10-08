@@ -22,12 +22,35 @@
   background-color: var(--input-field-hover);
 }
 
+.button-save {
+  background-color: var(--input-field);
+  color: var(--default-text);
+  border: 1px solid var(--input-field-border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin: 0 8px 0 12px;
+  font-size: var(--default-font-size);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-save:hover {
+  background-color: var(--input-field-hover);
+}
+
+.button-save:active {
+  background-color: var(--input-field-active);
+}
+
 .button-request-send {
   background-color: var(--send-button);
   color: #fff;
   font-weight: bold;
   padding: 13px 20px;
-  margin: 0 0 0 12px;
+  margin: 0 0 0 4px;
   display: inline-block;
   outline: none;
   border-radius: 5%;
