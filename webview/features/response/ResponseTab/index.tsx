@@ -2,7 +2,10 @@ import * as React from "react";
 import "./styles.css";
 import * as propTypes from "prop-types";
 import { responseOptions } from "../../../constants/response-options";
-import { responseViews } from "../../../constants/response-views";
+import {
+  responseViews,
+  htmlResponseViews,
+} from "../../../constants/response-views";
 import { supportedLangs } from "../../../constants/supported-langs";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
@@ -38,6 +41,18 @@ export const ResponseTab = (props) => {
     return contentTypeHeader?.value.toLowerCase().includes("application/json");
   };
 
+  // Check if the response is HTML
+  const isHtmlResponse = () => {
+    if (language === "html") return true;
+    if (!response.headers) return false;
+
+    const contentTypeHeader = response.headers.find(
+      (header) => header.key.toLowerCase() === "content-type"
+    );
+
+    return contentTypeHeader?.value.toLowerCase().includes("text/html");
+  };
+
   // Check if the data looks like JSON
   const looksLikeJson = (data: string) => {
     if (!data || data.trim().length === 0) return false;
@@ -48,9 +63,19 @@ export const ResponseTab = (props) => {
     );
   };
 
+  const isJsonContent = isJsonResponse() || looksLikeJson(response.data || "");
+  const isHtmlContent = isHtmlResponse();
+
   const showViewModeToggle =
-    selected === "body" &&
-    (isJsonResponse() || looksLikeJson(response.data || ""));
+    selected === "body" && (isJsonContent || isHtmlContent);
+
+  // Get the appropriate view options based on content type
+  const getViewOptions = () => {
+    if (isHtmlContent) {
+      return htmlResponseViews;
+    }
+    return responseViews;
+  };
 
   return (
     <div className="response-options-tab-wrapper">
@@ -87,7 +112,7 @@ export const ResponseTab = (props) => {
             className="select-res-lang"
             value={viewMode}
           >
-            {responseViews.map((view) => (
+            {getViewOptions().map((view) => (
               <option key={view.value} value={view.value}>
                 {view.name}
               </option>

@@ -4,6 +4,7 @@ import { useAppSelector } from "../../../redux/hooks";
 import { selectResponse, selectResponseViewMode } from "../responseSlice";
 import * as propTypes from "prop-types";
 import { JsonObjectBrowser } from "../JsonObjectBrowser";
+import { HtmlPreview } from "../HtmlPreview";
 
 const Editor = React.lazy(() => import("../../../shared/Editor"));
 
@@ -21,6 +22,17 @@ export const ResponseBody = (props) => {
     );
 
     return contentTypeHeader?.value.toLowerCase().includes("application/json");
+  };
+
+  // Function to check if content type indicates HTML
+  const isHtmlContentType = () => {
+    if (!response.headers) return false;
+
+    const contentTypeHeader = response.headers.find(
+      (header) => header.key.toLowerCase() === "content-type"
+    );
+
+    return contentTypeHeader?.value.toLowerCase().includes("text/html");
   };
 
   // Function to check if the data looks like JSON
@@ -66,10 +78,16 @@ export const ResponseBody = (props) => {
       isJsonContentType() ||
       looksLikeJson(response.data || ""));
 
+  // Check if we should show the HTML preview
+  const showHtmlPreview =
+    viewMode === "preview" && (language === "html" || isHtmlContentType());
+
   return (
     <div className="response-window">
       {showObjectBrowser ? (
         <JsonObjectBrowser data={response.data || ""} />
+      ) : showHtmlPreview ? (
+        <HtmlPreview data={response.data || ""} />
       ) : (
         <React.Suspense fallback={<div>loading</div>}>
           <Editor
