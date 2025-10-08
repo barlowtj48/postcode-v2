@@ -2,9 +2,14 @@ import * as React from "react";
 import "./styles.css";
 import * as propTypes from "prop-types";
 import { responseOptions } from "../../../constants/response-options";
+import { responseViews } from "../../../constants/response-views";
 import { supportedLangs } from "../../../constants/supported-langs";
-import { useAppSelector } from "../../../redux/hooks";
-import { selectResponse } from "../responseSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import {
+  selectResponse,
+  selectResponseViewMode,
+  viewModeUpdated,
+} from "../responseSlice";
 
 const ResponseInfo = ({ responseTitle, info }) => {
   return (
@@ -18,6 +23,34 @@ const ResponseInfo = ({ responseTitle, info }) => {
 export const ResponseTab = (props) => {
   const { selected, setSelected, language, setLanguage } = props;
   const response = useAppSelector(selectResponse);
+  const viewMode = useAppSelector(selectResponseViewMode);
+  const dispatch = useAppDispatch();
+
+  // Check if the response is JSON
+  const isJsonResponse = () => {
+    if (language === "json") return true;
+    if (!response.headers) return false;
+
+    const contentTypeHeader = response.headers.find(
+      (header) => header.key.toLowerCase() === "content-type"
+    );
+
+    return contentTypeHeader?.value.toLowerCase().includes("application/json");
+  };
+
+  // Check if the data looks like JSON
+  const looksLikeJson = (data: string) => {
+    if (!data || data.trim().length === 0) return false;
+    const trimmed = data.trim();
+    return (
+      (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+      (trimmed.startsWith("[") && trimmed.endsWith("]"))
+    );
+  };
+
+  const showViewModeToggle =
+    selected === "body" &&
+    (isJsonResponse() || looksLikeJson(response.data || ""));
 
   return (
     <div className="response-options-tab-wrapper">
@@ -44,6 +77,19 @@ export const ResponseTab = (props) => {
             {supportedLangs.map((type) => (
               <option key={type.value} value={type.value}>
                 {type.name}
+              </option>
+            ))}
+          </select>
+        ) : null}
+        {showViewModeToggle ? (
+          <select
+            onChange={(e) => dispatch(viewModeUpdated(e.target.value))}
+            className="select-res-lang"
+            value={viewMode}
+          >
+            {responseViews.map((view) => (
+              <option key={view.value} value={view.value}>
+                {view.name}
               </option>
             ))}
           </select>

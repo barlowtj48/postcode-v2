@@ -1,0 +1,33 @@
+.json-object-browser {
+  height: 100%;
+  padding: 10px;
+  background-color: var(--background);
+  color: var(--default-text);
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--default-font-size);
+  overflow: auto;
+}
+
+.json-object-browser .react-json-view {
+  background-color: var(--background) !important;
+}
+
+.json-object-browser .string-value {
+  color: var(--vscode-debugTokenExpression-string) !important;
+}
+
+.json-object-browser .number-value {
+  color: var(--vscode-debugTokenExpression-number) !important;
+}
+
+.json-object-browser .boolean-value {
+  color: var(--vscode-debugTokenExpression-boolean) !important;
+}
+
+.json-object-browser .null-value {
+  color: var(--vscode-debugTokenExpression-name) !important;
+}
+
+.json-object-browser .object-key-val {
+  color: var(--vscode-debugTokenExpression-name) !important;
+}

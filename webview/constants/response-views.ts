@@ -7,4 +7,8 @@ export const responseViews = [
     name: "Raw",
     value: "raw",
   },
+  {
+    name: "Object Browser",
+    value: "object",
+  },
 ];

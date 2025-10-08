@@ -10,9 +10,10 @@ export interface ResponseState {
   loading?: boolean;
   headers?: { key: string; value: string }[];
   duration?: number;
+  viewMode?: string;
 }
 
-const initialState: ResponseState = { initial: true };
+const initialState: ResponseState = { initial: true, viewMode: "pretty" };
 
 const responseSlice = createSlice({
   name: "response",
@@ -34,14 +35,19 @@ const responseSlice = createSlice({
     responseLoadingStarted(state) {
       state.loading = true;
     },
+    viewModeUpdated(state, action: PayloadAction<string>) {
+      state.viewMode = action.payload;
+    },
   },
 });
 
-export const { responseUpdated, responseLoadingStarted } =
+export const { responseUpdated, responseLoadingStarted, viewModeUpdated } =
   responseSlice.actions;
 
 export const selectResponse = (state: RootState) => state.response;
 export const selectResponseHeaders = (state: RootState) =>
   state.response.headers;
+export const selectResponseViewMode = (state: RootState) =>
+  state.response.viewMode || "pretty";
 
 export default responseSlice.reducer;
