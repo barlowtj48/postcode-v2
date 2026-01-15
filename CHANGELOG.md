@@ -4,6 +4,12 @@ All notable changes to the "postcode" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.4.2
+
+- Add collections sidebar to save and organize requests
+- Add ability to load saved requests
+- Add rename and delete for collections and requests
+
 ### 1.3.9
 
 - automattically use http protocol if none is specified
@@ -15,7 +21,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### 1.3.7
 
-- add request options for strict ssl 
+- add request options for strict ssl
 
 ### 1.3.6
 
