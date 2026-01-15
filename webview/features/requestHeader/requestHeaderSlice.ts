@@ -39,6 +39,9 @@ const requestHeaderSlice = createSlice({
   name: "requestHeader",
   initialState,
   reducers: {
+    requestHeaderStateLoaded(state, action: PayloadAction<Header[]>) {
+      return action.payload;
+    },
     requestHeaderUpdated(state, action: PayloadAction<any>) {
       state[action.payload.idx] = action.payload.value;
     },
@@ -52,6 +55,7 @@ const requestHeaderSlice = createSlice({
 });
 
 export const {
+  requestHeaderStateLoaded,
   requestHeaderAdded,
   requestHeaderUpdated,
   requestHeaderDeleted,

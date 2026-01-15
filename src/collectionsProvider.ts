@@ -194,7 +194,7 @@ export class CollectionsProvider
   async saveRequest(
     request: Omit<SavedRequest, "id" | "createdAt" | "updatedAt">,
     collectionId: string
-  ): Promise<void> {
+  ): Promise<string> {
     const requestId = Date.now().toString();
     const newRequest: SavedRequest = {
       ...request,
@@ -213,6 +213,8 @@ export class CollectionsProvider
 
     await this.saveData();
     this.refresh();
+
+    return requestId;
   }
 
   async deleteCollection(collectionId: string): Promise<void> {
@@ -275,5 +277,10 @@ export class CollectionsProvider
 
   getCollections(): Collection[] {
     return this.collections;
+  }
+
+  getCollectionRequestIds(collectionId: string): string[] {
+    const collection = this.collections.find((c) => c.id === collectionId);
+    return collection ? collection.requests : [];
   }
 }

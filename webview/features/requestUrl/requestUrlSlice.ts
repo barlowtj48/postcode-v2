@@ -35,6 +35,17 @@ const requestUrlSlice = createSlice({
   name: "requestUrl",
   initialState,
   reducers: {
+    requestUrlStateLoaded(
+      state,
+      action: PayloadAction<{ url: string; queryParams: QueryParam[] }>
+    ) {
+      const { query, ...other } = Url.parse(action.payload.url);
+      return {
+        ...other,
+        query: action.payload.queryParams || query || [],
+        variables: [],
+      };
+    },
     requestUrlUpdated(state, action: PayloadAction<string>) {
       const { query, ...other } = Url.parse(action.payload);
       return {
@@ -59,6 +70,7 @@ const requestUrlSlice = createSlice({
 });
 
 export const {
+  requestUrlStateLoaded,
   requestUrlUpdated,
   requestQueryParamAdded,
   requestQueryParamUpdated,

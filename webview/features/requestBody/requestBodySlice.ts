@@ -47,6 +47,9 @@ const requestBodySlice = createSlice({
   name: "requestBody",
   initialState,
   reducers: {
+    requestBodyStateLoaded(state, action: PayloadAction<RequestBodyState>) {
+      return { ...initialState, ...action.payload };
+    },
     requestBodyFormDataItemAdded(state, action: PayloadAction<any>) {
       state.formdata.push(action.payload);
     },
@@ -97,6 +100,7 @@ const requestBodySlice = createSlice({
 });
 
 export const {
+  requestBodyStateLoaded,
   requestBodyBinaryUpdated,
   requestBodyFormDataItemAdded,
   requestBodyFormDataItemDeleted,

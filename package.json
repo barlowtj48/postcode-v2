@@ -34,7 +34,8 @@
     "commands": [
       {
         "command": "postcode.createRequest",
-        "title": "Postcode: Create Request"
+        "title": "Postcode: Create Request",
+        "icon": "$(add)"
       },
       {
         "command": "postcode.saveRequest",
@@ -91,9 +92,14 @@
     "menus": {
       "view/title": [
         {
+          "command": "postcode.createRequest",
+          "when": "view == postcode.collections",
+          "group": "navigation@1"
+        },
+        {
           "command": "postcode.createCollection",
           "when": "view == postcode.collections",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [

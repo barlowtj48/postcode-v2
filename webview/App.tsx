@@ -2,7 +2,10 @@ import * as React from "react";
 import "./App.css";
 import { responseUpdated } from "./features/response/responseSlice";
 import { requestMethodUpdated } from "./features/requestMethod/requestMethodSlice";
-import { requestUrlUpdated } from "./features/requestUrl/requestUrlSlice";
+import { requestUrlStateLoaded } from "./features/requestUrl/requestUrlSlice";
+import { requestBodyStateLoaded } from "./features/requestBody/requestBodySlice";
+import { requestAuthStateLoaded } from "./features/requestAuth/requestAuthSlice";
+import { requestHeaderStateLoaded } from "./features/requestHeader/requestHeaderSlice";
 import { Postcode } from "./pages/Postcode";
 import { useAppDispatch } from "./redux/hooks";
 import vscode from "./vscode";
@@ -24,10 +27,31 @@ const App = () => {
         const request = event.data.request;
         // Update method
         dispatch(requestMethodUpdated(request.method));
-        // Update URL
-        dispatch(requestUrlUpdated(request.url));
-        // TODO: Add more request loading logic for headers, body, auth, etc.
-        // For now, we'll load the basic method and URL
+        // Update URL and query params
+        dispatch(
+          requestUrlStateLoaded({
+            url: request.url,
+            queryParams: request.queryParams || [],
+          })
+        );
+        // Update headers
+        if (request.headers) {
+          dispatch(requestHeaderStateLoaded(request.headers));
+        }
+        // Update body
+        if (request.body) {
+          dispatch(requestBodyStateLoaded(request.body));
+        }
+        // Update auth
+        if (request.auth) {
+          dispatch(requestAuthStateLoaded(request.auth));
+        }
+      } else if (event.data.type === "load-credentials") {
+        // Load credentials from secure storage
+        const credentials = event.data.credentials;
+        if (credentials) {
+          dispatch(requestAuthStateLoaded(credentials));
+        }
       }
     });
   }, [dispatch]);

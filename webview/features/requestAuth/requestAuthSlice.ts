@@ -32,6 +32,9 @@ const requestAuthSlice = createSlice({
   name: "requestAuth",
   initialState,
   reducers: {
+    requestAuthStateLoaded(state, action: PayloadAction<RequestAuthState>) {
+      return { ...initialState, ...action.payload };
+    },
     requestAuthTypeUpdated(state, action: PayloadAction<string>) {
       state.type = action.payload;
     },
@@ -44,8 +47,11 @@ const requestAuthSlice = createSlice({
   },
 });
 
-export const { requestAuthTypeUpdated, requestAuthOptionsUpdated } =
-  requestAuthSlice.actions;
+export const {
+  requestAuthStateLoaded,
+  requestAuthTypeUpdated,
+  requestAuthOptionsUpdated,
+} = requestAuthSlice.actions;
 
 export const selectRequestAuth = (state: RootState) => state.requestAuth;
 export const selectRequestAuthType = (state: RootState) =>

@@ -3,6 +3,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { CollectionsProvider, CollectionTreeItem } from "./collectionsProvider";
+import { CredentialsManager, StoredCredentials } from "./credentialsManager";
 import axios from "axios";
 import * as https from "https";
 import { RequestOptions } from "../webview/features/requestOptions/requestOptionsSlice";
@@ -10,6 +11,7 @@ import { RequestOptions } from "../webview/features/requestOptions/requestOption
 function createRequestPanel(
   context: vscode.ExtensionContext,
   collectionsProvider: CollectionsProvider,
+  credentialsManager: CredentialsManager,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   savedRequest?: any
 ) {
@@ -50,12 +52,27 @@ function createRequestPanel(
   // If we have a saved request, send it to the webview to populate the form
   if (savedRequest) {
     panel.webview.onDidReceiveMessage(
-      (message) => {
+      async (message) => {
         if (message.type === "webview-ready") {
           panel.webview.postMessage({
             type: "load-request",
             request: savedRequest,
           });
+
+          // Load credentials securely from secret storage
+          const credentials = await credentialsManager.getCredentials(
+            savedRequest.id
+          );
+          if (credentials) {
+            panel.webview.postMessage({
+              type: "load-credentials",
+              credentials: {
+                type: savedRequest.auth?.type || "noauth",
+                basic: credentials.basic || { username: "", password: "" },
+                bearer: credentials.bearer || { token: "" },
+              },
+            });
+          }
         }
       },
       undefined,
@@ -65,10 +82,30 @@ function createRequestPanel(
 
   // Handle HTTP requests from webview
   panel.webview.onDidReceiveMessage(
-    ({ method, url, headers, body, auth, options, type, requestData }) => {
+    async ({
+      method,
+      url,
+      headers,
+      body,
+      auth,
+      options,
+      type,
+      requestData,
+    }) => {
       if (type === "save-request") {
         // Handle save request command
-        vscode.commands.executeCommand("postcode.saveRequest", requestData);
+        vscode.commands.executeCommand(
+          "postcode.saveRequest",
+          requestData,
+          credentialsManager
+        );
+        return;
+      }
+
+      if (type === "store-credentials") {
+        // Handle credential storage
+        const { requestId, credentials } = requestData;
+        await credentialsManager.storeCredentials(requestId, credentials);
         return;
       }
 
@@ -190,6 +227,9 @@ function createRequestPanel(
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  // Initialize credentials manager with secure storage
+  const credentialsManager = new CredentialsManager(context.secrets);
+
   // Initialize collections provider
   const collectionsProvider = new CollectionsProvider(context);
   vscode.window.registerTreeDataProvider(
@@ -220,6 +260,13 @@ export function activate(context: vscode.ExtensionContext) {
         "Cancel"
       );
       if (confirm === "Delete") {
+        // Delete credentials for all requests in the collection
+        const requestIds = collectionsProvider.getCollectionRequestIds(
+          item.itemId
+        );
+        for (const requestId of requestIds) {
+          await credentialsManager.deleteCredentials(requestId);
+        }
         await collectionsProvider.deleteCollection(item.itemId);
       }
     }
@@ -234,6 +281,8 @@ export function activate(context: vscode.ExtensionContext) {
         "Cancel"
       );
       if (confirm === "Delete") {
+        // Delete credentials from secure storage
+        await credentialsManager.deleteCredentials(item.itemId);
         await collectionsProvider.deleteRequest(item.itemId);
       }
     }
@@ -262,7 +311,12 @@ export function activate(context: vscode.ExtensionContext) {
       const request = collectionsProvider.getRequest(item.itemId);
       if (request) {
         // Create a new webview panel with the loaded request
-        createRequestPanel(context, collectionsProvider, request);
+        createRequestPanel(
+          context,
+          collectionsProvider,
+          credentialsManager,
+          request
+        );
       }
     }
   );
@@ -270,7 +324,7 @@ export function activate(context: vscode.ExtensionContext) {
   const saveRequestCommand = vscode.commands.registerCommand(
     "postcode.saveRequest",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (requestData: any) => {
+    async (requestData: any, credManager?: CredentialsManager) => {
       const collections = collectionsProvider.getCollections();
       if (collections.length === 0) {
         vscode.window.showWarningMessage(
@@ -297,10 +351,43 @@ export function activate(context: vscode.ExtensionContext) {
         });
 
         if (requestName) {
-          await collectionsProvider.saveRequest(
-            { ...requestData, name: requestName },
+          // Store credentials securely (separate from the request data)
+          const credentials: StoredCredentials = {};
+          if (requestData.auth) {
+            if (requestData.auth.type === "basic" && requestData.auth.basic) {
+              credentials.basic = requestData.auth.basic;
+            }
+            if (requestData.auth.type === "bearer" && requestData.auth.bearer) {
+              credentials.bearer = requestData.auth.bearer;
+            }
+          }
+
+          // Create request data without sensitive credential values
+          const sanitizedRequest = {
+            ...requestData,
+            name: requestName,
+            auth: {
+              type: requestData.auth?.type || "noauth",
+              // Don't store actual credentials in workspace state
+              basic: { username: "", password: "" },
+              bearer: { token: "" },
+            },
+          };
+
+          const savedRequestId = await collectionsProvider.saveRequest(
+            sanitizedRequest,
             selectedCollection.id
           );
+
+          // Store credentials in secure storage using the request ID
+          if (
+            savedRequestId &&
+            credManager &&
+            (credentials.basic || credentials.bearer)
+          ) {
+            await credManager.storeCredentials(savedRequestId, credentials);
+          }
+
           vscode.window.showInformationMessage(
             `Request "${requestName}" saved successfully!`
           );
@@ -317,7 +404,7 @@ export function activate(context: vscode.ExtensionContext) {
     () => {
       // The code you place here will be executed every time your command is executed
       vscode.window.showInformationMessage("Welcome to Postcode!");
-      createRequestPanel(context, collectionsProvider);
+      createRequestPanel(context, collectionsProvider, credentialsManager);
     }
   );
 
